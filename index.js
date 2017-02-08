@@ -1,21 +1,39 @@
 var express = require('express');
-var bodyParser = require('body-parser');
+var session = require('express-session');
+var MongoStore = require('connect-mongo')(session);
+var flash = require('connect-flash');
+var config = require('config-lite');
 var path = require('path');
+var routes = require('./routes');
+var pkg = require('./package');
 var app = express();
-
-var indexRouter = require('./routes/index');
-var userRouter = require('./routes/users');
 
 app.set('views', path.join(__dirname,  'views'));
 app.set('view engine', 'ejs');
 
-app.use('/', indexRouter);
-app.use('/users', userRouter);
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(session({
+  name: config.session.key,
+  secret: config.session.secret,
+  cookie: {
+    maxAge: config.session.maxAge
+  },
+  store: new MongoStore({
+    url: config.mongodb
+  }),
+  resave:true,
+	saveUninitialized: true
+}));
+
+app.use(flash());
+
+routes(app);
 
 app.use(function(req, res, next) {
-  res.status(404).render('404');
+  res.status(404).end('404');
 });
 
-app.listen(3000, function() {
-  console.log('app runs at localhost:3000');
+app.listen(config.port, function() {
+  console.log(`${pkg.name} listening on port ${config.port}`);
 });
