@@ -5,7 +5,7 @@ var checkLogin = require('../middlewares/check').checkLogin;
 
 // GET 首页 文章列表 所有用户或指定用户 /posts/?author=***
 router.get('/', function(req, res, next) {
-  res.send(req.flash());
+  res.render('posts');
 });
 
 // POST 发表文章

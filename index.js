@@ -3,6 +3,7 @@ var session = require('express-session');
 var MongoStore = require('connect-mongo')(session);
 var flash = require('connect-flash');
 var config = require('config-lite');
+var formidable = require('express-formidable');
 var path = require('path');
 var routes = require('./routes');
 var pkg = require('./package');
@@ -28,10 +29,29 @@ app.use(session({
 
 app.use(flash());
 
+app.use(formidable({
+  encoding: 'utf-8',
+  uploadDir: path.join(__dirname, 'public/img'),
+  multiples: true
+}));
+
+app.locals.blog = {
+  title: pkg.name,
+  description: pkg.description
+};
+
+app.use(function(req, res, next) {
+  res.locals.user = req.session.user;
+  res.locals.success = req.flash('success').toString();
+  res.locals.error = req.flash('error').toString();
+  next();
+});
+
 routes(app);
 
 app.use(function(req, res, next) {
-  res.status(404).end('404');
+  res.status(404);
+  res.render('404');
 });
 
 app.listen(config.port, function() {
