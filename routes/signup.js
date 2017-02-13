@@ -13,10 +13,6 @@ router.get('/', checkNotLogin, function(req, res, next) {
 
 //用户注册
 router.post('/', checkNotLogin, function(req, res, next) {
-  console.log('用户注册的req--------' );
-  console.log(req.session);
-  console.log(req.fields);
-  console.log(req.files);
   var name = req.fields.name;
   var gender = req.fields.gender;
   var bio = req.fields.bio;

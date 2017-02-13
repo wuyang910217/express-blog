@@ -4,8 +4,10 @@
   "description": "express练习---参照N-blog",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index.js"
+    "test": "mocha --harmony test",
+    "start": "nodemon index.js",
+    "start-pro": "env NODE_ENV=production nodemon index.js",
+    "production": "NODE_ENV=production pm2 start index.js --node-args='--harmony' --name 'express-blog'"
   },
   "keywords": [],
   "author": "",
@@ -28,6 +30,8 @@
     "winston": "^2.3.1"
   },
   "devDependencies": {
-    "nodemon": "^1.11.0"
+    "mocha": "^3.2.0",
+    "nodemon": "^1.11.0",
+    "supertest": "^3.0.0"
   }
 }
