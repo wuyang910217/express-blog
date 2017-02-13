@@ -13,7 +13,10 @@ router.get('/', checkNotLogin, function(req, res, next) {
 
 //用户注册
 router.post('/', checkNotLogin, function(req, res, next) {
-  console.log('用户注册的req'+ req );
+  console.log('用户注册的req--------' );
+  console.log(req.session);
+  console.log(req.fields);
+  console.log(req.files);
   var name = req.fields.name;
   var gender = req.fields.gender;
   var bio = req.fields.bio;
@@ -22,8 +25,8 @@ router.post('/', checkNotLogin, function(req, res, next) {
   var repassword = req.fields.repassword;
 
   try {
-    if (!(name.length >=1 && name.length <= 10)) {
-      throw new Error('名字请限制在1-10个字符');
+    if (!(name.length >=1 && name.length <= 20)) {
+      throw new Error('名字请限制在1-20个字符');
     }
     if (['m', 'f', 'x'].indexOf(gender) === -1) {
       throw new Error('性别只能是男，女或者保密');
@@ -34,7 +37,7 @@ router.post('/', checkNotLogin, function(req, res, next) {
     if (!req.files.avatar.name) {
       throw new Error('缺少头像');
     }
-    if (password.length <= 6) {
+    if (password.length <= 5) {
       throw new Error('密码至少6个字符');
     }
     if (password !== repassword) {
@@ -53,7 +56,8 @@ router.post('/', checkNotLogin, function(req, res, next) {
     bio: bio,
     avatar: avatar
   };
-
+//
+//
   UserModel.create(user)
     .then(function(result) {
       user = result.ops[0];
@@ -63,7 +67,8 @@ router.post('/', checkNotLogin, function(req, res, next) {
       res.redirect('/posts');
     })
     .catch(function(e) {
-      if (e.message.match('E1100 duplicate key')) {
+      var regex = new RegExp('E11000 duplicate key');
+      if (e.message.match(regex)) {
         req.flash('error', '用户名已被占用');
         return res.redirect('/signup');
       }
